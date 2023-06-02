@@ -39,19 +39,28 @@ def get_top_genres(emotion, top_genres_count):
 
 def recommend(emotion, books_count):
     # Get the genre weights for the given emotion
-    genre_weights = genre_weights_df.loc[:, emotion]
-    
-    # Normalize the genre weights to sum up to 1
-    genre_weights /= genre_weights.sum()
+    genre_weights = genre_weights_df[emotion]
     
     # Sort the genre weights in descending order
     genre_weights = genre_weights.sort_values(ascending=False)
     
-    # Select the top genres based on the weights
+    # Get the top genres based on the weights
     top_genres = genre_weights.index.tolist()
     
+    # Calculate the weight multiplier for each genre based on its position in the top_genres list
+    weight_multiplier = [1 / (i+1) for i in range(len(top_genres))]
+    
+    # Calculate the weighted genre weights for each genre
+    weighted_genre_weights = genre_weights * weight_multiplier
+    
+    # Sort the weighted genre weights in descending order
+    weighted_genre_weights = weighted_genre_weights.sort_values(ascending=False)
+    
+    # Select the top genres based on the weighted genre weights
+    top_genres_weighted = weighted_genre_weights.index.tolist()[:5]
+    
     # Filter books dataframe based on top genres
-    filtered_books = books_genres_df[books_genres_df['Genres'].apply(lambda genres: any(genre in genres for genre in top_genres))]
+    filtered_books = books_genres_df[books_genres_df['Genres'].apply(lambda genres: any(genre in genres for genre in top_genres_weighted))]
     
     # Get the desired number of books
     recommended_books = filtered_books['ISBN'].tolist()[:books_count]

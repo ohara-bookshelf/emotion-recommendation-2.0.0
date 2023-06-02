@@ -3,11 +3,12 @@ from pydantic import BaseModel
 
 # from model.model import get_top_genres, recommend
 # from model.model import __version__ as model_version
+# import uvicorn
 
 from app.model.model import get_top_genres, recommend
 from app.model.model import __version__ as model_version
 
-# import uvicorn
+
 #import traceback
 
 
